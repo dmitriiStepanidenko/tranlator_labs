@@ -10,12 +10,12 @@
       "adapter": "vscode-cpptools",
       "variables": {
         "BUILDME": {
-          "shell": "gcc -o ${workspaceRoot}/test -g  ${workspaceRoot}/test.c"
+          "shell": "gcc -o ${workspaceRoot}/test.out -g  ${workspaceRoot}/test.c"
         }
       },
       "configuration": {
         "request": "launch",
-        "program": "${workspaceRoot}/test",
+        "program": "${workspaceRoot}/test.out",
         "stopAtEntry": true,
         "MIMode": "gdb"
       }
