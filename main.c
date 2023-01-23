@@ -8,7 +8,7 @@
 int main() {
   // current_stream = stdin;
   char input[] =
-      "for(i=0;i<10;i++) for(j=0;j<10;j++) for(k=i; k<j++; k++) print(j);";
+      "for(i=0;i<10;i++) for(j=0;j<10;j++) for(k=i; k<j; k++) print(j);";
   current_stream = fmemopen(input, strlen(input), "r+");
   printf("%s\n", input);
 
