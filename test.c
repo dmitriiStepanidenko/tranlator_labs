@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 void test_setup(void) {
   current_stream = NULL;
@@ -187,7 +188,7 @@ MU_TEST(test_function) {
 
   symbol = scan();
   FunctionData data;
-  function(&data, 0);
+  function(&data);
   mu_check(strcmp(data.identifier, "i") == 0);
 
   mu_check(data.iden_numconst_start.type == numconst);
@@ -203,7 +204,7 @@ MU_TEST(test_statement) {
 
   symbol = scan();
   tStatementData data;
-  statement(&data, 0);
+  statement(&data);
 
   mu_check(data.type == print);
   mu_check(data.iden_numconst_print.type == numconst);
@@ -218,7 +219,7 @@ MU_TEST(full_example) {
 
   symbol = scan();
   tStatementData data;
-  statement(&data, 0);
+  statement(&data);
 
   mu_check(data.type == function_t);
 
@@ -245,6 +246,90 @@ MU_TEST(full_example) {
            ftell(current_stream)); // fmemopen не возвращает EOF
 }
 
+MU_TEST(full_example_with_exec_default) {
+  char input[] = "for(i=0;i<10;i++) for(j=0;j<i;j++) print(j++);";
+  write_string_to_stdin(&input[0]);
+
+  symbol = scan();
+  tStatementData data;
+  statement(&data);
+  mu_check(strlen(input) ==
+           ftell(current_stream)); // fmemopen не возвращает EOF
+
+  // Flush stdout first if you've previously printed something
+  fflush(stdout);
+
+  // Save stdout so it can be restored later
+  int temp_stdout;
+  temp_stdout = dup(fileno(stdout));
+
+  // Redirect stdout to a new pipe
+  int pipes[2];
+  pipe(pipes);
+  dup2(pipes[1], fileno(stdout));
+
+  exec_statement(&data);
+  printf("\n");
+
+  // Terminate captured output with a zero
+  write(pipes[1], "", 1);
+
+  // Restore stdout
+  fflush(stdout);
+  dup2(temp_stdout, fileno(stdout));
+
+  char buf[101];
+  read(pipes[0], buf, 100);
+
+  char expected_buf[] = "0;0;0;2;0;2;0;2;4;0;2;4;0;2;4;6;0;2;4;6;0;2;4;6;8;\n";
+  mu_check(strcmp(expected_buf, buf) == 0);
+}
+
+MU_TEST(full_example_with_exec_longer) {
+  char input[] =
+      "for(i=0;i<10;i++) for(j=0;j<10;j++) for(k=i; k<j; k++) print(j);";
+  write_string_to_stdin(&input[0]);
+
+  symbol = scan();
+  tStatementData data;
+  statement(&data);
+  mu_check(strlen(input) ==
+           ftell(current_stream)); // fmemopen не возвращает EOF
+
+  // Flush stdout first if you've previously printed something
+  fflush(stdout);
+
+  // Save stdout so it can be restored later
+  int temp_stdout;
+  temp_stdout = dup(fileno(stdout));
+
+  // Redirect stdout to a new pipe
+  int pipes[2];
+  pipe(pipes);
+  dup2(pipes[1], fileno(stdout));
+
+  exec_statement(&data);
+  printf("\n");
+
+  // Terminate captured output with a zero
+  write(pipes[1], "", 1);
+
+  // Restore stdout
+  fflush(stdout);
+  dup2(temp_stdout, fileno(stdout));
+
+  char expected_buf[] =
+      "1;2;2;3;3;3;4;4;4;4;5;5;5;5;5;6;6;6;6;6;6;7;7;7;7;7;7;7;8;8;8;8;8;8;8;8;"
+      "9;9;9;9;9;9;9;9;9;2;3;3;4;4;4;5;5;5;5;6;6;6;6;6;7;7;7;7;7;7;8;8;8;8;8;8;"
+      "8;9;9;9;9;9;9;9;9;3;4;4;5;5;5;6;6;6;6;7;7;7;7;7;8;8;8;8;8;8;9;9;9;9;9;9;"
+      "9;4;5;5;6;6;6;7;7;7;7;8;8;8;8;8;9;9;9;9;9;9;5;6;6;7;7;7;8;8;8;8;9;9;9;9;"
+      "9;6;7;7;8;8;8;9;9;9;9;7;8;8;9;9;9;8;9;9;9;\n";
+
+  char buf[strlen(expected_buf)];
+  read(pipes[0], buf, strlen(expected_buf) + 1);
+  mu_check(strcmp(expected_buf, buf) == 0);
+}
+
 MU_TEST_SUITE(test_suite) {
   MU_SUITE_CONFIGURE(&test_setup, &test_teardown);
   MU_RUN_TEST(test_scaner_identifier);
@@ -258,6 +343,8 @@ MU_TEST_SUITE(test_suite) {
   MU_RUN_TEST(test_function);
   MU_RUN_TEST(test_statement);
   MU_RUN_TEST(full_example);
+  MU_RUN_TEST(full_example_with_exec_default);
+  MU_RUN_TEST(full_example_with_exec_longer);
 }
 
 int main() {

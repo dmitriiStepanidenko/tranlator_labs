@@ -16,8 +16,10 @@ int main() {
 
   tStatementData data;
   symbol = scan();
-  statement(&data, 0);
-  if (!(symbol == EOF || strlen(input) == ftell(current_stream)))
+  statement(&data);
+  if (!(symbol == EOF ||
+        strlen(input) ==
+            ftell(current_stream))) // fmemopen не возвращает в конце потока EOF
     error("Still some input exists");
   exec_statement(&data);
   printf("\n");

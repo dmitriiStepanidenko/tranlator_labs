@@ -15,7 +15,6 @@
 #define LESS 263
 #define EQUAL 264
 
-//<START> ::= <statement>
 //<statement> ::= <function><statement>
 //<statement> ::= printf( <iden_numconst> );
 //<function> ::= for( IDENTIFIER = <iden_numconst>; IDENTIFIER <
@@ -187,7 +186,6 @@ int scan() {
 
 typedef struct {
   int value;
-  size_t scope;
 } Symbol;
 
 typedef struct {
@@ -256,7 +254,7 @@ void iden_numconst(IdenNumconstData *data) {
     error("Wrong input iden_numconst");
 }
 
-void function(FunctionData *data, int scope_lvl) {
+void function(FunctionData *data) {
   //<function> ::= for( IDENTIFIER = <iden_numconst>; IDENTIFIER <
   //<iden_numconst>; IDENTIFIER ++)
 
@@ -273,7 +271,6 @@ void function(FunctionData *data, int scope_lvl) {
     error("Redeclaration of variable");
   Entry *new_entry = malloc(sizeof(Entry));
   Symbol *new_symbol = malloc(sizeof(Symbol));
-  new_symbol->scope = scope_lvl;
   new_entry->value = new_symbol;
   ht_set(ht, data->identifier, new_entry);
 
@@ -347,16 +344,16 @@ void function(FunctionData *data, int scope_lvl) {
     error("Expected ) at the end of for\n");
 }
 
-void statement(tStatementData *data, int scope_lvl) {
+void statement(tStatementData *data) {
   //<statement> ::= <function><statement>
   //<statement> ::= printf( <iden_numconst> );
   if (symbol == FOR_START) {
     data->type = function_t;
-    function(&data->function, scope_lvl);
+    function(&data->function);
 
     symbol = scan();
     data->statement = malloc(sizeof(tStatementData));
-    statement(data->statement, scope_lvl + 1);
+    statement(data->statement);
   } else if (symbol == PRINT_START) {
     data->type = print;
 
@@ -437,16 +434,4 @@ void exec_statement(tStatementData *data) {
   } else {
     exec_function(&data->function, data->statement);
   }
-}
-
-int start() {
-  tStatementData data;
-  symbol = scan();
-  statement(&data, 0);
-  // while (symbol == PLUS)
-  //{
-  //     symbol = scan();
-  //	resT += t();
-  // }
-  return 0;
 }
