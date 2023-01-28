@@ -4,7 +4,7 @@ int main() {
   for (int i = 0; i < 10; i++)
     for (int j = 0; j < 10; j++)
       for (int k = i; k < j; k++)
-        printf("%d;", j);
+        printf("%d;", k++);
 
   // for (int i = 0; i < 10; i++)
   //   for (int j = 0; j < i; j++)

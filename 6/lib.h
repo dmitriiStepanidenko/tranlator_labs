@@ -108,13 +108,13 @@ int is_any_separator(char t) {
   return 0;
 }
 
-int is_any_token(char t) {
+int is_simple_token(char t) {
   if (t == '+' || t == ';' || t == '<' || t == '=' || t == ')')
     return 1;
   return 0;
 }
 
-int return_token(char t) {
+int return_simple_token(char t) {
   switch (t) {
   case ')':
     return END_BRACK;
@@ -142,8 +142,8 @@ int scan() {
   while (1) {
     t = getc(current_stream);
     if (is_any_separator(t)) {
-    } else if (is_any_token(t)) {
-      return return_token(t);
+    } else if (is_simple_token(t)) {
+      return return_simple_token(t);
     } else if (t >= '0' && t <= '9') {
       value = t - '0';
       t = getc(current_stream);
@@ -151,7 +151,7 @@ int scan() {
         value = value * 10 + t - '0';
         t = getc(current_stream);
       }
-      if (is_any_token(t))
+      if (is_simple_token(t))
         ungetc(t, current_stream);
       return NUMCONST;
     } else if (t == EOF)
@@ -168,8 +168,8 @@ int scan() {
         if (size + 1 > 255)
           error("Exceed size of IDENTIFIER (256)");
         t = getc(current_stream);
-        if (is_any_token(t) || is_any_separator(t)) {
-          if (is_any_token(t)) {
+        if (is_simple_token(t) || is_any_separator(t)) {
+          if (is_simple_token(t)) {
             ungetc(t, current_stream);
           }
           break;
