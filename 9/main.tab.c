@@ -69,15 +69,16 @@
 /* First part of user prologue.  */
 #line 1 "main.y"
 
+#include "ast.h"
+#include "hashtable.h"
 #include <stdio.h>
 #include "main.tab.h"
-typedef struct Node Node;
-struct Node {
-  Node* childs;
-  char* value;
-  };
 
-#line 81 "main.tab.c"
+HashTable* ht;
+int yylex();
+int yyerror(const char *);
+
+#line 82 "main.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -111,19 +112,18 @@ enum yysymbol_kind_t
   YYSYMBOL_FOR_START = 3,                  /* FOR_START  */
   YYSYMBOL_END_BRACK = 4,                  /* END_BRACK  */
   YYSYMBOL_PRINTF_START = 5,               /* PRINTF_START  */
-  YYSYMBOL_PRINTF_END = 6,                 /* PRINTF_END  */
-  YYSYMBOL_EQUAL = 7,                      /* EQUAL  */
-  YYSYMBOL_LESS = 8,                       /* LESS  */
-  YYSYMBOL_INCREMENT = 9,                  /* INCREMENT  */
-  YYSYMBOL_SEMICOLON = 10,                 /* SEMICOLON  */
-  YYSYMBOL_IDENTIFIER = 11,                /* IDENTIFIER  */
-  YYSYMBOL_NUMCONST = 12,                  /* NUMCONST  */
-  YYSYMBOL_YYACCEPT = 13,                  /* $accept  */
-  YYSYMBOL_start = 14,                     /* start  */
-  YYSYMBOL_statement = 15,                 /* statement  */
-  YYSYMBOL_function = 16,                  /* function  */
-  YYSYMBOL_iden_numconst = 17,             /* iden_numconst  */
-  YYSYMBOL_opt_plus = 18                   /* opt_plus  */
+  YYSYMBOL_EQUAL = 6,                      /* EQUAL  */
+  YYSYMBOL_LESS = 7,                       /* LESS  */
+  YYSYMBOL_INCREMENT = 8,                  /* INCREMENT  */
+  YYSYMBOL_SEMICOLON = 9,                  /* SEMICOLON  */
+  YYSYMBOL_IDENTIFIER = 10,                /* IDENTIFIER  */
+  YYSYMBOL_NUMCONST = 11,                  /* NUMCONST  */
+  YYSYMBOL_YYACCEPT = 12,                  /* $accept  */
+  YYSYMBOL_start = 13,                     /* start  */
+  YYSYMBOL_statement = 14,                 /* statement  */
+  YYSYMBOL_function = 15,                  /* function  */
+  YYSYMBOL_iden_numconst = 16,             /* iden_numconst  */
+  YYSYMBOL_opt_plus = 17                   /* opt_plus  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -451,19 +451,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   38
+#define YYLAST   40
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  13
+#define YYNTOKENS  12
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  9
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  29
+#define YYNSTATES  30
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   267
+#define YYMAXUTOK   266
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -503,14 +503,14 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    12
+       5,     6,     7,     8,     9,    10,    11
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    22,    22,    23,    24,    28,    29,    30,    31,    32
+       0,    43,    43,    47,    56,    75,    83,    91,   102,   105
 };
 #endif
 
@@ -527,9 +527,9 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
 static const char *const yytname[] =
 {
   "END", "error", "\"invalid token\"", "FOR_START", "END_BRACK",
-  "PRINTF_START", "PRINTF_END", "EQUAL", "LESS", "INCREMENT", "SEMICOLON",
-  "IDENTIFIER", "NUMCONST", "$accept", "start", "statement", "function",
-  "iden_numconst", "opt_plus", YY_NULLPTR
+  "PRINTF_START", "EQUAL", "LESS", "INCREMENT", "SEMICOLON", "IDENTIFIER",
+  "NUMCONST", "$accept", "start", "statement", "function", "iden_numconst",
+  "opt_plus", YY_NULLPTR
 };
 
 static const char *
@@ -553,9 +553,9 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       0,    -9,    -2,    11,    16,     0,    10,    -5,    12,    13,
-     -13,    20,     1,    15,    17,    22,    14,    18,    19,     1,
-      21,    23,    24,    26,     3,     5,    25,    27,    28
+      -1,    -7,     0,    16,    17,    -1,    12,    -3,    15,    18,
+     -13,    20,     2,    19,    21,    22,    23,    24,    -4,    14,
+       2,    25,    26,    27,    29,     4,     6,    28,    30,    31
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -565,13 +565,13 @@ static const yytype_int8 yydefact[] =
 {
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        1,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -13,   -13,    31,   -13,   -12,     7
+     -13,   -13,    33,   -13,   -12,     1
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -585,39 +585,41 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      16,    -8,     6,     1,    13,     2,    -4,    20,    -4,     7,
-       8,    10,    25,    26,    27,    -8,    -2,    12,    -6,    15,
-      -3,    -9,    -5,    -7,    17,     0,     0,    19,     0,    18,
-      24,    21,    28,    23,    22,    -6,    11,    -9,    -7
+      16,    -8,     1,     6,     2,    13,    19,    -4,    21,    -4,
+       7,     8,    26,    27,    28,    -8,    10,    -2,    12,    -6,
+      -3,    20,    15,    -9,    -5,    -7,     0,    29,     0,     0,
+       0,    17,    18,    25,    22,    24,    23,    -6,    11,    -9,
+      -7
 };
 
 static const yytype_int8 yycheck[] =
 {
-      12,     6,    11,     3,     9,     5,     3,    19,     5,    11,
-      12,     0,    11,    12,     9,    10,     0,     7,     6,     6,
-       0,     6,     0,     6,    10,    -1,    -1,     8,    -1,    11,
-       4,    10,    25,     9,    11,    10,     5,    10,    10
+      12,     4,     3,    10,     5,     8,    10,     3,    20,     5,
+      10,    11,    10,    11,     8,     9,     0,     0,     6,     4,
+       0,     7,     4,     4,     0,     4,    -1,    26,    -1,    -1,
+      -1,     9,     9,     4,     9,     8,    10,     9,     5,     9,
+       9
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     5,    14,    15,    16,    11,    11,    12,    17,
-       0,    15,     7,     9,    18,     6,    17,    10,    11,     8,
-      17,    10,    11,     9,     4,    11,    12,     9,    18
+       0,     3,     5,    13,    14,    15,    10,    10,    11,    16,
+       0,    14,     6,     8,    17,     4,    16,     9,     9,    10,
+       7,    16,     9,    10,     8,     4,    10,    11,     8,    17
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    13,    14,    15,    16,    15,    17,    17,    18,    18
+       0,    12,    13,    14,    15,    14,    16,    16,    17,    17
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     2,    12,     3,     1,     2,     0,     1
+       0,     2,     1,     2,    12,     4,     1,     2,     0,     1
 };
 
 
@@ -1350,23 +1352,111 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
+  case 2: /* start: statement  */
+#line 43 "main.y"
+                  {
+     exec_statement(ht, (yyvsp[0].statement_data));
+     //exit(0);
+     }
+#line 1362 "main.tab.c"
+    break;
+
   case 3: /* statement: function statement  */
-#line 23 "main.y"
-                               {printf("statement:fuction statement\n %s", yyvsp[-1]);}
-#line 1357 "main.tab.c"
+#line 47 "main.y"
+                               {
+         struct StatementData* statement_data = malloc( sizeof( struct StatementData ) );
+          
+         statement_data->type = function_t;
+         statement_data->function = (yyvsp[-1].function_data);
+         statement_data->statement = (yyvsp[0].statement_data);
+        
+         (yyval.statement_data) = statement_data;
+}
+#line 1376 "main.tab.c"
     break;
 
   case 4: /* function: FOR_START IDENTIFIER EQUAL iden_numconst SEMICOLON IDENTIFIER LESS iden_numconst SEMICOLON IDENTIFIER INCREMENT END_BRACK  */
-#line 24 "main.y"
-                                                                                                                                      {
-        printf("function: for( IDENTIFIER = iden_numconst ; IDENTIFIER < iden_numconst ; IDENTIFIER ++ )\n");
-        //printf("%s %s\n", $2);
+#line 58 "main.y"
+        {
+        struct FunctionData* function = malloc(sizeof( struct FunctionData));
+        if( ht_get(ht, (yyvsp[-10].identifier_name)) != NULL ) {
+          yyerror("Повторное определение переменной");
         }
-#line 1366 "main.tab.c"
+        function->identifier = strdup((yyvsp[-10].identifier_name)); 
+        Symbol* s = malloc(sizeof(Symbol));
+        ht_set(ht,strdup((yyvsp[-10].identifier_name)), s);
+
+        if ( strcmp((yyvsp[-10].identifier_name), (yyvsp[-6].identifier_name))!=0 || strcmp((yyvsp[-10].identifier_name), (yyvsp[-2].identifier_name))!=0 ){
+          yyerror("Different IDENTIFIERs in for loop");
+        }
+
+        function->iden_numconst_start = (yyvsp[-8].iden_numconst);
+        function->iden_numconst_end = (yyvsp[-4].iden_numconst);
+        (yyval.function_data) = function;
+        }
+#line 1398 "main.tab.c"
+    break;
+
+  case 5: /* statement: PRINTF_START iden_numconst END_BRACK SEMICOLON  */
+#line 75 "main.y"
+                                                           {
+         struct StatementData* statement_data = malloc( sizeof( struct StatementData ) );
+          
+         statement_data->type = print;
+         statement_data->iden_numconst_print = (yyvsp[-2].iden_numconst);
+        
+         (yyval.statement_data) = statement_data;
+         }
+#line 1411 "main.tab.c"
+    break;
+
+  case 6: /* iden_numconst: NUMCONST  */
+#line 83 "main.y"
+                        {
+             struct IdenNumconstData* iden_numconst = malloc(sizeof( struct IdenNumconstData ));
+             iden_numconst->type = numconst;
+             printf("numconst:%d\n", (yyvsp[0].number));
+             iden_numconst->numconst = (yyvsp[0].number); 
+             printf("numconst:%d\n", iden_numconst->numconst);
+             (yyval.iden_numconst) = iden_numconst;
+}
+#line 1424 "main.tab.c"
+    break;
+
+  case 7: /* iden_numconst: IDENTIFIER opt_plus  */
+#line 91 "main.y"
+                                   {
+             struct IdenNumconstData* iden_numconst = malloc(sizeof( struct IdenNumconstData ));
+             iden_numconst->type = identifier;
+             iden_numconst->opt_plus = (yyvsp[0].opt_plus);
+             iden_numconst->identifier = strdup((yyvsp[-1].identifier_name)); 
+             if( ht_get(ht, iden_numconst->identifier) == NULL ){
+                yyerror("Unknown identifier");
+                exit(-1);
+             }
+             (yyval.iden_numconst) = iden_numconst;
+             }
+#line 1440 "main.tab.c"
+    break;
+
+  case 8: /* opt_plus: %empty  */
+#line 102 "main.y"
+                 { 
+        struct OptPlusData* opt_plus = malloc(sizeof(struct OptPlusData)); 
+        opt_plus->type = empty; (yyval.opt_plus) = opt_plus; }
+#line 1448 "main.tab.c"
+    break;
+
+  case 9: /* opt_plus: INCREMENT  */
+#line 105 "main.y"
+                    { 
+        struct OptPlusData* opt_plus = malloc(sizeof(struct OptPlusData)); 
+        opt_plus->type = increment; (yyval.opt_plus) = opt_plus; }
+#line 1456 "main.tab.c"
     break;
 
 
-#line 1370 "main.tab.c"
+#line 1460 "main.tab.c"
 
       default: break;
     }
@@ -1590,18 +1680,20 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 52 "main.y"
+#line 110 "main.y"
 
 
 
 int main()
 {
+  ht = ht_create();
   printf("> "); 
   yyparse();
+  printf("\n"); 
   return 0;
 }
 
-int yyerror(char *s)
+int yyerror(const char *s)
 {
   fprintf(stderr, "error: %s\n", s);
   return -1;

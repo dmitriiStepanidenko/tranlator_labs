@@ -57,20 +57,36 @@ extern int yydebug;
     FOR_START = 258,               /* FOR_START  */
     END_BRACK = 259,               /* END_BRACK  */
     PRINTF_START = 260,            /* PRINTF_START  */
-    PRINTF_END = 261,              /* PRINTF_END  */
-    EQUAL = 262,                   /* EQUAL  */
-    LESS = 263,                    /* LESS  */
-    INCREMENT = 264,               /* INCREMENT  */
-    SEMICOLON = 265,               /* SEMICOLON  */
-    IDENTIFIER = 266,              /* IDENTIFIER  */
-    NUMCONST = 267                 /* NUMCONST  */
+    EQUAL = 261,                   /* EQUAL  */
+    LESS = 262,                    /* LESS  */
+    INCREMENT = 263,               /* INCREMENT  */
+    SEMICOLON = 264,               /* SEMICOLON  */
+    IDENTIFIER = 265,              /* IDENTIFIER  */
+    NUMCONST = 266                 /* NUMCONST  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 21 "main.y"
+
+  // 
+  char* identifier_name;
+  int number;
+  //
+  struct OptPlusData* opt_plus;
+  struct IdenNumconstData* iden_numconst;
+  struct FunctionData* function_data;
+  struct StatementData* statement_data;
+  
+
+#line 87 "main.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

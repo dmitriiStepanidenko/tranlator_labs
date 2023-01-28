@@ -1,5 +1,7 @@
 %{
   #include "main.tab.h"
+  #include <stdio.h>
+  #include <string.h>
   //enum yytokentype {
   //  FOR_START = 258,
   //  EQUAL = 259,
@@ -8,26 +10,37 @@
   //  FOR_END = 262,
   //  INCREMENT = 263,
   //  PRINTF_START = 264,
-  //  PRINTF_END = 265,
   //  LESS = 266,
   //  IDENTIFIER
   //};
   //int yylval;
 //(\+\+)[[:space:]]*\) { printf("FOR_END:%s\n", yytext); return FOR_END; }
+  int yywrap();
 %}
 
+for_start (for)[[:space:]]*\(
+numconst  [0-9]+
+print_start (print)[[:space:]]*\( 
+identifier [a-zA-Z_][a-zA-Z0-9_]*
 %%
 
-(for)[[:space:]]*\( { printf("FOR_START:%s\n", yytext); return FOR_START; }
-"=" { printf("EQUAL:%s\n", yytext); return EQUAL; }
-"<" { printf("LESS:%s\n", yytext); return LESS; }
-";" { printf("SEMICOLON:%s\n", yytext); return SEMICOLON; }
-"++" { printf("INCREMENT:%s\n", yytext); return INCREMENT; }
-")" { printf("END_BRACK:%s\n", yytext); return END_BRACK; }
-[0-9]+	{ yylval = atoi(yytext); printf("NUMCONST:%s\n", yytext); return NUMCONST; }
-(print)[[:space:]]*\( { printf("PRINTF_START:%s\n", yytext); return PRINTF_START; }
-(\))[[:space:]]*; { printf("PRINTF_END:%s\n", yytext); return PRINTF_END; }
-[a-zA-Z_][a-zA-Z0-9_]* { strcpy(yylval, yytext); printf("IDENTIFIER:%s\n", yytext); return IDENTIFIER; }
+{for_start} {  return FOR_START; }
+"=" { return EQUAL; }
+"<" { return LESS; }
+";" {  return SEMICOLON; }
+"++" { return INCREMENT; }
+")" {  return END_BRACK; }
+{identifier} { 
+  size_t len = strlen(yytext);
+  yylval.identifier_name = malloc(len+1);
+  sscanf(yytext, "%s", yylval.identifier_name);  
+  return IDENTIFIER; }
+{numconst}	{ 
+  printf("NUMCONST:%d\n", atoi(yytext)); 
+  yylval.number = atoi(yytext);  
+  printf("NUMCONST:%d\n", yylval.number); 
+  return NUMCONST; }
+{print_start} {  return PRINTF_START; }
 
 
 %%
@@ -40,3 +53,6 @@
 //    //else printf("\n");
 //  }
 //}
+int yywrap(){
+  return 1;
+}
