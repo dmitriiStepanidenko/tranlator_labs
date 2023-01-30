@@ -3,6 +3,7 @@
 - Выполнить команду make
 
 
+```
 <START> ::= <statement>
 <statement> ::= <function><statement>
 <statement> ::= printf( <iden_numconst> );
@@ -11,3 +12,4 @@
 <iden_numconst> ::= IDENTIFIER <opt_plus>
 <opt_plus> ::= e
 <opt_plus> ::= ++
+```
