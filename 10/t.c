@@ -1,0 +1,23 @@
+#include <stdio.h>
+
+int main() {
+   for (int i = 0; i < 10; i++)
+     for (int j = 0; j < 10; j++)
+       for (int k = i; k < j; k++)
+         printf("%d;", k++);
+
+  //for (int i = 0; i < 10; i++)
+  //  for (int j = 0; j < i; j++)
+  //    printf("%d;", j++);
+
+  printf("\n");
+  return 0;
+}
+
+//for(i=0;i<10;i++) for(j=0;j<i;j++) print(j++);
+//
+//
+//   for (i = 0; i < 10; i++)
+//     for (j = 0; j < 10; j++)
+//       for (k = i; k < j; k++)
+//         print(k++);

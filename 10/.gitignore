@@ -1,0 +1,8 @@
+buildfolder/CMakeFiles/*
+buildfolder/antlr4_runtime/*
+buildfolder/CMakeCache.txt
+buildfolder/Makefile
+buildfolder/cmake_install.cmake
+compile_commands.json
+
+

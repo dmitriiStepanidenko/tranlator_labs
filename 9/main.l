@@ -2,19 +2,6 @@
   #include "main.tab.h"
   #include <stdio.h>
   #include <string.h>
-  //enum yytokentype {
-  //  FOR_START = 258,
-  //  EQUAL = 259,
-  //  SEMICOLON = 260,
-  //  NUMCONST = 261,
-  //  FOR_END = 262,
-  //  INCREMENT = 263,
-  //  PRINTF_START = 264,
-  //  LESS = 266,
-  //  IDENTIFIER
-  //};
-  //int yylval;
-//(\+\+)[[:space:]]*\) { printf("FOR_END:%s\n", yytext); return FOR_END; }
   int yywrap();
 %}
 
@@ -44,15 +31,6 @@ identifier [a-zA-Z_][a-zA-Z0-9_]*
 
 
 %%
-//main()
-//{
-//  int tok;
-//
-//  while(tok = yylex()) {
-//    printf("%d\n", tok);
-//    //else printf("\n");
-//  }
-//}
 int yywrap(){
   return 1;
 }
